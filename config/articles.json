@@ -1,0 +1,49 @@
+{
+  "blogInfo": {
+    "title": "我的Vue博客",
+    "description": "一个基于Vue.js的简单博客网站",
+    "author": "博客作者"
+  },
+  "articles": [
+    {
+      "id": "test-code-blocks",
+      "title": "代码块渲染测试",
+      "summary": "测试Markdown代码块的渲染效果，包括各种编程语言的语法高亮",
+      "author": "测试用户",
+      "publishDate": "2024-01-16",
+      "tags": ["测试", "代码", "Markdown"],
+      "fileName": "test-code-blocks.md",
+      "featured": true
+    },
+    {
+      "id": "vue-blog-creation",
+      "title": "使用Vue创建博客系统",
+      "summary": "详细介绍如何使用Vue.js和最小化依赖创建一个功能完整的博客网站，包含Markdown渲染和响应式设计",
+      "author": "张三",
+      "publishDate": "2024-01-15",
+      "tags": ["Vue", "前端", "博客", "Markdown"],
+      "fileName": "vue-blog-creation.md",
+      "featured": true
+    },
+    {
+      "id": "javascript-advanced",
+      "title": "JavaScript高级技巧",
+      "summary": "探索JavaScript的高级特性，包括闭包、原型链、异步编程等核心概念",
+      "author": "李四",
+      "publishDate": "2024-01-10",
+      "tags": ["JavaScript", "进阶", "编程"],
+      "fileName": "javascript-advanced.md",
+      "featured": false
+    },
+    {
+      "id": "css-layout-guide",
+      "title": "CSS布局完全指南",
+      "summary": "从基础到高级，全面介绍CSS布局技术，包括Flexbox、Grid等现代布局方案",
+      "author": "王五",
+      "publishDate": "2024-01-05",
+      "tags": ["CSS", "布局", "设计"],
+      "fileName": "css-layout-guide.md",
+      "featured": false
+    }
+  ]
+}
