@@ -1,4 +1,1 @@
-# pykelysia.github.io
-My Blog
-
-TODO: test experience with GitHub Pages
+# Pyke Elysia's Blog
