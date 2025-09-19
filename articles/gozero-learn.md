@@ -45,7 +45,7 @@ cd ./api
 goctl api -o usermanager.api
 ```
 新创立的 `usermanager.api` 文件内有部分预先写好的内容（关于该文件格式的语法可能后续会专门写一篇）
-```
+```api
 syntax = "v1"
 
 info (
@@ -114,6 +114,42 @@ service tmp-api {
 @handler FunctionName
 requestWay /route(dataname) returns(dataname)
 ```
+### 生成中心网关代码
+运用 `goctl` 将api文档生成中心网关的代码。
+
+前文生成的api文档在修改后如下内容：
+```api
+syntax = "v1"
+
+info (
+	title: "usermanager"
+	desc: "a user manager system"
+	author: "myname"
+	email: "myemail"
+)
+
+type request {
+	username int64 `path:"user"`
+}
+
+type response {
+	ok bool `json:"ok"`
+}
+
+service tmp-api {
+	@handler GetUser
+	get /users/id/:user(request) returns(response)
+
+	@handler CreateUser
+	post /users/create(request)
+}
+```
+
+随后确保在 `/api` 目录下，运行：
+```bash
+goctl api go -api usermanager.api -dir .
+```
+即可生成相对应的微服务中心网关代码。
 ## 微服务
 // TODO
 ## 中心网关对接微服务
