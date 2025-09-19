@@ -151,7 +151,63 @@ goctl api go -api usermanager.api -dir .
 ```
 即可生成相对应的微服务中心网关代码。
 ## 微服务
-// TODO
+在该阶段我们需要为通过api文档建立的网络响应函数提供微服务。
+### 创建 `proto` 文件
+返回根目录，执行下述命令。
+```bash
+
+# 创建目录 `rpc` 并在该目录下创建目录 `getuser` `createuser` 两个目录。
+mkdir rpc
+cd rpc
+mkdir getuser
+mkdir createuser
+
+# 先进入 getuser 目录
+cd getuser
+
+# 通过 goctl 创建 getuser.proto 文件
+goctl rpc -o getuser.proto
+
+```
+此时在 `/rpc/getuser` 目录下出现了文件 `getuser.proto`。
+
+后续该模块的代码初始化将通过该文件实现。
+
+`createuser` 目录下的对应文件使用相同的方式创建。
+### 生成微服务框架
+将 proto 中的内容修改。
+```proto
+// getuser.proto
+message Request {
+	int64 username = 1;
+}
+
+message Response {
+	bool ok = 1;
+}
+
+service Getuser {
+  rpc GetUser(Request) returns(Response);
+}
+```
+```proto
+// createuser.proto
+message Request {
+  string ping = 1;
+}
+
+service CreateUser {
+  rpc CreateUser(Request);
+}
+```
+然后分别在目录 `/rpc/getuser` 和 `/rpc/createuser` 下运行命令：
+```bash
+# /rpc/getuser
+goctl rpc protoc getuser.proto --go_out=. --go-grpc_out=. --zrpc_out=.
+
+# /rpc/createuser
+goctl rpc protoc createuser.proto --go_out=. --go-grpc_out=. --zrpc_out=.
+```
 ## 中心网关对接微服务
 // TODO
 ## 数据库
