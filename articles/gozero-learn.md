@@ -74,8 +74,46 @@ service tmp-api {
 `info` 中的 `author`， `email` 一般是直接系统生成。（如果未直接生成可能是因为 `git` 未保存用户名和邮箱）
 
 我们需要该改动的地方就是在 `type` 和 `service` 两个部份内参考示例修改。
+#### `type`
+`type` 后为自定义的数据类型，语法与 `golang` 相似。
+```api
+type request{
+	ok bool `json:"ok"`
+}
+```
+需要注意的是，api文档中的变量名无需首字母大写，当 `goctl` 根据api文档生成项目时会自动转换为大写。
 
-// TODO 如何修改，简单介绍
+也可以借助 `()` 来实现批量自定义数据。
+```api
+type (
+	request {
+		ok bool
+	}
+	response {
+		ok bool
+	}
+)
+```
+#### `service`
+`service` 为提供某个服务，如：
+```api
+service tmp-api {
+	@handler GetUser // TODO: set handler name and delete this comment
+	get /users/id/:userId(request) returns(response)
+
+	@handler CreateUser // TODO: set handler name and delete this comment
+	post /users/create(request)
+}
+```
+即为提供名为 `tamp-api` （一般是和api文档创建时相同的名字）的服务，在服务内通过 `@handler` 引出一个网络请求路由，空格后跟随响应函数的函数名。
+
+换行后由请求方式起头，跟随具体的路由，再指出函数参数数据，以及返回的数据。
+
+大致如下：
+```api
+@handler FunctionName
+requestWay /route(dataname) returns(dataname)
+```
 ## 微服务
 // TODO
 ## 中心网关对接微服务
