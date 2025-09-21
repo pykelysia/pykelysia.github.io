@@ -290,6 +290,23 @@ func (l *CreateUserLogic) CreateUser(req *types.Request) error {
 }
 ```
 ## 数据库
-// TODO
+接下来我们要将数据通过 `MySQL` 存储。
+### 自定义表单结构
+创建目录 `rpc/model`。
+
+在该目录下创建 `user.sql` 并编写:
+```sql
+create table `user`
+(
+	`username` int,
+	primary key(`username`)
+);
+```
+然后再该目录下执行语句:
+```bash
+goctl model mysql ddl -c -src user.sql -dir .
+```
+即可生成 curd 结构。
+###
 ## 微服务中链接数据库
 // TODO
