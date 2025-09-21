@@ -193,11 +193,15 @@ service Getuser {
 ```proto
 // createuser.proto
 message Request {
-  string ping = 1;
+  int64 username = 1;
+}
+
+message Response {
+  bool ok = 1;
 }
 
 service CreateUser {
-  rpc CreateUser(Request);
+  rpc CreateUser(Request) returns (Response);
 }
 ```
 然后分别在目录 `/rpc/getuser` 和 `/rpc/createuser` 下运行命令：
@@ -208,6 +212,7 @@ goctl rpc protoc getuser.proto --go_out=. --go-grpc_out=. --zrpc_out=.
 # /rpc/createuser
 goctl rpc protoc createuser.proto --go_out=. --go-grpc_out=. --zrpc_out=.
 ```
+完成后记得在 `rpc/getuser/etc/getuser.yaml` 中将监听端口从8080更改为8081或其他闲置端口，避免与 `createuser` 的微服务冲突。
 ## 中心网关对接微服务
 // TODO
 ## 数据库
