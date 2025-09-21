@@ -214,7 +214,81 @@ goctl rpc protoc createuser.proto --go_out=. --go-grpc_out=. --zrpc_out=.
 ```
 完成后记得在 `rpc/getuser/etc/getuser.yaml` 中将监听端口从8080更改为8081或其他闲置端口，避免与 `createuser` 的微服务冲突。
 ## 中心网关对接微服务
-// TODO
+### 网络连接
+我们在 `api/etc/usermanager-api.yaml` 文件中添加如下内容
+```yaml
+Getuser:
+  Etcd:
+    Hosts:
+      - localhost:2379
+    Key: getuser.rpc
+Createuser:
+  Etcd:
+    Hosts:
+      - localhost:2379
+    Key: createuser.rpc
+```
+### api 相关配置
+在 `api/internal/config/config.go` 中修改如下内容:
+```go
+type Config struct {
+	rest.RestConf
+	GetUser    zrpc.RpcClientConf
+	CreateUser zrpc.RpcClientConf
+}
+```
+以及在 `api/internal/svc/servicecontext.go` 中修改:
+```go
+type ServiceContext struct {
+	Config     config.Config
+	GetUser    getuserclient.Getuser
+	CreateUser createuserclient.CreateUser
+}
+
+func NewServiceContext(c config.Config) *ServiceContext {
+	return &ServiceContext{
+		Config:     c,
+		GetUser:    getuserclient.NewGetuser(zrpc.MustNewClient(c.GetUser)),
+		CreateUser: createuserclient.NewCreateUser(zrpc.MustNewClient(c.CreateUser)),
+	}
+}
+```
+### 填写 api 逻辑
+在 `api/internal/logic/getuserlogic.go` 中修改 `GetUser` 方法：
+```go
+func (l *GetUserLogic) GetUser(req *types.Request) (resp *types.Response, err error) {
+	// 手写代码
+	r, err := l.svcCtx.GetUser.GetUser(l.ctx, &getuser.Request{
+		Username: req.Username,
+	})
+	if err != nil {
+		logx.Error(err)
+		return &types.Response{
+			Ok: false,
+		}, err
+	}
+	return &types.Response{
+		Ok: r.Ok,
+	}, nil
+	//
+}
+```
+在 `api/internal/logic/createuserlogic.go` 中修改 `CreateUser` 方法：
+```go
+func (l *CreateUserLogic) CreateUser(req *types.Request) error {
+
+	_, err := l.svcCtx.CreateUser.CreateUser(l.ctx, &createuser.Request{
+		Username: req.Username,
+	})
+
+	if err != nil {
+		logx.Error(err)
+		return err
+	}
+
+	return nil
+}
+```
 ## 数据库
 // TODO
 ## 微服务中链接数据库
