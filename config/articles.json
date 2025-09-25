@@ -23,6 +23,16 @@
       "publishDate": "2025-9-19 (最后一次更新: 2025-9-25)",
       "tags": ["learn", "gozero", "go"],
       "fileName": "gozero-learn.md",
+      "featured": false
+    },
+    {
+      "id": "TODO",
+      "title": "TODO",
+      "summary": "计划接下来要学习的内容",
+      "author": "Pyke",
+      "publishDate": "2025-9-25",
+      "tags": ["learn"],
+      "fileName": "TODO.md",
       "featured": true
     }
   ]
