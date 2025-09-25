@@ -11,7 +11,7 @@
       "summary": "根据博主本人的实际路线，撰写，整理的一个学习路线图",
       "author": "Pyke",
       "publishDate": "2025-9-14",
-      "tags": ["learn", "代码", "Markdown"],
+      "tags": ["learn"],
       "fileName": "learnmap.md",
       "featured": true
     },
@@ -20,7 +20,7 @@
       "title": "gozero框架学习",
       "summary": "gozero的使用方式",
       "author": "Pyke",
-      "publishDate": "2025-9-19 (最后一次更新: 2025-9-21)",
+      "publishDate": "2025-9-19 (最后一次更新: 2025-9-25)",
       "tags": ["learn", "gozero", "go"],
       "fileName": "gozero-learn.md",
       "featured": true

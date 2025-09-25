@@ -307,6 +307,68 @@ create table `user`
 goctl model mysql ddl -c -src user.sql -dir .
 ```
 即可生成 curd 结构。
-###
 ## 微服务中链接数据库
-// TODO
+修改 `rpc/createuser/etc/createuser.yaml` 和 `rpc/getuser/etc/getuser.yaml`：
+```yaml
+DataSource: username:password@tcp(127.0.0.1:3306)/gozeroexp
+Table: user
+Cache:
+  - Host: 127.0.0.1:6379
+```
+`DataSource` 中的内容将 `username` 和 `password` 两个地方修改为自己数据库的用户名与密码即可。
+
+然后修改 `rpc/createuser/internal/config/config.go` 和 `rpc/getuser/internal/config/config.go` ，如下：
+```go
+type Config struct {
+	zrpc.RpcServerConf
+	DataSource string
+	Cache cache.CacheConf
+}
+```
+修改 `rpc/createuser/internal/svc/servicecontext.go` 和 `rpc/getuser/internal/svc/servicecontext.go` ，如下：
+```go
+type ServiceContext struct {
+	Config config.Config
+	Model model.BookModel
+}
+func NewServiceContext(c config.Config) *ServiceContext {
+	return &ServiceContext{
+		Config: c,
+		Model: model.NewBookModel(sqlx.NewMysql(c.DataSource), c.Cache),
+	}
+}
+```
+最后修改 `rpc/createuser/internal/logic/createuserlogic.go` 和 `rpc/getuser/internal/logic/getuserlogic.go` ，如下：
+```go
+func (l *CreateUserLogic) CreateUser(in *createuser.Request) (*createuser.Response, error) {
+
+	_, err := l.svcCtx.Model.Insert(l.ctx, &model.User{
+		Username: in.Username,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &createuser.Response{
+		Ok: true,
+	}, nil
+}
+
+func (l *GetUserLogic) GetUser(in *getuser.Request) (*getuser.Response, error) {
+	
+	resp, err := l.svcCtx.Model.FindOne(l.ctx, in.User)
+	if err != nil {
+		return nil, err
+	}
+
+	return &getuser.Response{
+		Ok: true,
+	}, nil
+}
+```
+## 运行
+- 确保 `MySQL` `etcd` `Redis` 在后台已经运行。
+- 随后在 `api` `rpc/createuser` `rpc/getuser` 下运行 `go build` 命令获得对应的二进制文件。
+- 运行 `createuser.exe` 和 `getuser.exe`。
+- 运行 `api.exe`。
