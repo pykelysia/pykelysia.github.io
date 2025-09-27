@@ -16,6 +16,16 @@
       "featured": true
     },
     {
+      "id": "TODO",
+      "title": "TODO",
+      "summary": "计划接下来要学习的内容",
+      "author": "Pyke",
+      "publishDate": "2025-9-25",
+      "tags": ["learn"],
+      "fileName": "TODO.md",
+      "featured": true
+    },
+    {
       "id": "gozero-learn",
       "title": "gozero框架学习",
       "summary": "gozero的使用方式",
@@ -26,14 +36,14 @@
       "featured": false
     },
     {
-      "id": "TODO",
-      "title": "TODO",
-      "summary": "计划接下来要学习的内容",
+      "id": "jwt-learn",
+      "title": "JWT 学习",
+      "summary": "JWT 的使用方式",
       "author": "Pyke",
-      "publishDate": "2025-9-25",
-      "tags": ["learn"],
-      "fileName": "TODO.md",
-      "featured": true
+      "publishDate": "2025-9-27",
+      "tags": ["learn", "JWT", "go"],
+      "fileName": "JWT-learn.md",
+      "featured": false
     }
   ]
 }
