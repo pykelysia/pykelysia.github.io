@@ -6,22 +6,12 @@
   },
   "articles": [
     {
-      "id": "learnmap",
-      "title": "学习路线",
-      "summary": "根据博主本人的实际路线，撰写，整理的一个学习路线图",
-      "author": "Pyke",
-      "publishDate": "2025-9-14",
-      "tags": ["learn"],
-      "fileName": "learnmap.md",
-      "featured": true
-    },
-    {
       "id": "TODO",
       "title": "TODO",
       "summary": "计划接下来要学习的内容",
       "author": "Pyke",
       "publishDate": "2025-9-25",
-      "tags": ["learn"],
+      "tags": [],
       "fileName": "TODO.md",
       "featured": true
     },
@@ -31,7 +21,7 @@
       "summary": "gozero的使用方式",
       "author": "Pyke",
       "publishDate": "2025-9-19 (最后一次更新: 2025-9-25)",
-      "tags": ["learn", "gozero", "go"],
+      "tags": ["gozero", "go"],
       "fileName": "gozero-learn.md",
       "featured": false
     },
@@ -41,8 +31,28 @@
       "summary": "JWT 的使用方式",
       "author": "Pyke",
       "publishDate": "2025-9-27",
-      "tags": ["learn", "JWT", "go"],
+      "tags": ["JWT", "go"],
       "fileName": "JWT-learn.md",
+      "featured": false
+    },
+    {
+      "id": "go-redis",
+      "title": "GoLang-Redis 学习",
+      "summary": "GoLang-Redis 的一些基本使用",
+      "author": "Pyke",
+      "publishDate": "2025-10-3",
+      "tags": ["redis", "go"],
+      "fileName": "go-redis.md",
+      "featured": false
+    },
+    {
+      "id": "learnmap",
+      "title": "学习路线",
+      "summary": "根据博主本人的实际路线，撰写，整理的一个学习路线图",
+      "author": "Pyke",
+      "publishDate": "2025-9-14",
+      "tags": [],
+      "fileName": "learnmap.md",
       "featured": false
     }
   ]
