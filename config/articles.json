@@ -21,7 +21,10 @@
       "summary": "gozero的使用方式",
       "author": "Pyke",
       "publishDate": "2025-9-19 (最后一次更新: 2025-9-25)",
-      "tags": ["gozero", "go"],
+      "tags": [
+        "gozero",
+        "go"
+      ],
       "fileName": "gozero-learn.md",
       "featured": false
     },
@@ -31,7 +34,10 @@
       "summary": "JWT 的使用方式",
       "author": "Pyke",
       "publishDate": "2025-9-27",
-      "tags": ["JWT", "go"],
+      "tags": [
+        "JWT",
+        "go"
+      ],
       "fileName": "JWT-learn.md",
       "featured": false
     },
@@ -41,7 +47,10 @@
       "summary": "GoLang-Redis 的一些基本使用",
       "author": "Pyke",
       "publishDate": "2025-10-3",
-      "tags": ["redis", "go"],
+      "tags": [
+        "redis",
+        "go"
+      ],
       "fileName": "go-redis.md",
       "featured": false
     },
@@ -53,6 +62,16 @@
       "publishDate": "2025-9-14",
       "tags": [],
       "fileName": "learnmap.md",
+      "featured": false
+    },
+    {
+      "id": "gorm-mysql",
+      "title": "Gorm操作",
+      "summary": "关于 gorm 的操作学习笔记指南",
+      "author": "Pyke",
+      "publishDate": "2025-10-14",
+      "tags": ["go", "sql"],
+      "fileName": "gorm.md",
       "featured": false
     }
   ]
