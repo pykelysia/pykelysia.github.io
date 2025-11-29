@@ -70,8 +70,21 @@
       "summary": "关于 gorm 的操作学习笔记指南",
       "author": "Pyke",
       "publishDate": "2025-10-14",
-      "tags": ["go", "sql"],
+      "tags": [
+        "go",
+        "sql"
+      ],
       "fileName": "gorm.md",
+      "featured": false
+    },
+    {
+      "id": "safari",
+      "title": "浏览器原理",
+      "summary": "25-11-29 例会内容",
+      "author": "Pyke",
+      "publishDate": "2025-11-29",
+      "tags": [],
+      "fileName": "safari.md",
       "featured": false
     }
   ]
