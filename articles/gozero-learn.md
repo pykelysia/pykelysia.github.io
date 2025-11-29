@@ -1,159 +1,206 @@
 # 利用 `go-zero` 搭建微服务
+
 ## 目录
+
 1. [工具安装](#相关工具安装)
 2. [中心网关](#中心网关)
 3. [微服务](#微服务)
 4. [中心网关对接微服务](#中心网关对接微服务)
 5. [数据库](#数据库)
 6. [微服务中链接数据库](#微服务中链接数据库)
+
 ## 相关工具安装
+
 使用 `go-zero` 需要安装以下内容
 [Golang](#golang)
 [MySQL](#mysql)
 [etcd](#etcd)
 [proto-gen-go](#proto-gen-go)
 [goctl](#goctl)
+
 ### Golang
+
 直接在官网下载即可。
+
 ### MySQL
+
 也是直接前往官网下载即可，可以使用docker来启动一遍管理。
+
 ### etcd
+
 可以前往[Release-etcd(Github)](https://github.com/etcd-io/etcd/releases)下载,并运行即可。
+
 ### proto-gen-go
+
 ```bash
 go install -u github.com/golang/protobuf/protoc-gen-go@v1.3.2
 ```
+
 ### goctl
+
 ```bash
 go install -u github.com/zeromicro/go-zero/tools/goctl@latest
 ```
+
 如果 `proto-gen-go` 和 `goctl` 未正常安装可以自行上网查找其他方法安装。
+
 ## 中心网关
+
 ### 中心网关创建
+
 在项目文件下使用 `go` 命令初始化项目
+
 ```bash
 go mod init usermanager
 ```
+
 我们将中心网关集中在 `api` 目录下
+
 ```bash
 mkdir api
 cd ./api
 ```
+
 ### 创建api文档
+
 直接通过 `goctl` 创建 api 文档
+
 ```bash
 goctl api -o usermanager.api
 ```
+
 新创立的 `usermanager.api` 文件内有部分预先写好的内容（关于该文件格式的语法可能后续会专门写一篇）
+
 ```api
 syntax = "v1"
 
 info (
-	title: // TODO: add title
-	desc: // TODO: add description
-	author: // your git name
-	email: // your git email
+ title: // TODO: add title
+ desc: // TODO: add description
+ author: // your git name
+ email: // your git email
 )
 
 type request {
-	// TODO: add members here and delete this comment
+ // TODO: add members here and delete this comment
 }
 
 type response {
-	// TODO: add members here and delete this comment
+ // TODO: add members here and delete this comment
 }
 
 service tmp-api {
-	@handler GetUser // TODO: set handler name and delete this comment
-	get /users/id/:userId(request) returns(response)
+ @handler GetUser // TODO: set handler name and delete this comment
+ get /users/id/:userId(request) returns(response)
 
-	@handler CreateUser // TODO: set handler name and delete this comment
-	post /users/create(request)
+ @handler CreateUser // TODO: set handler name and delete this comment
+ post /users/create(request)
 }
 ```
+
 `info` 中的 `author`， `email` 一般是直接系统生成。（如果未直接生成可能是因为 `git` 未保存用户名和邮箱）
 
 我们需要该改动的地方就是在 `type` 和 `service` 两个部份内参考示例修改。
+
 #### `type`
+
 `type` 后为自定义的数据类型，语法与 `golang` 相似。
+
 ```api
 type request{
-	ok bool `json:"ok"`
+ ok bool `json:"ok"`
 }
 ```
+
 需要注意的是，api文档中的变量名无需首字母大写，当 `goctl` 根据api文档生成项目时会自动转换为大写。
 
 也可以借助 `()` 来实现批量自定义数据。
+
 ```api
 type (
-	request {
-		ok bool
-	}
-	response {
-		ok bool
-	}
+ request {
+  ok bool
+ }
+ response {
+  ok bool
+ }
 )
 ```
+
 #### `service`
+
 `service` 为提供某个服务，如：
+
 ```api
 service tmp-api {
-	@handler GetUser // TODO: set handler name and delete this comment
-	get /users/id/:userId(request) returns(response)
+ @handler GetUser // TODO: set handler name and delete this comment
+ get /users/id/:userId(request) returns(response)
 
-	@handler CreateUser // TODO: set handler name and delete this comment
-	post /users/create(request)
+ @handler CreateUser // TODO: set handler name and delete this comment
+ post /users/create(request)
 }
 ```
+
 即为提供名为 `tamp-api` （一般是和api文档创建时相同的名字）的服务，在服务内通过 `@handler` 引出一个网络请求路由，空格后跟随响应函数的函数名。
 
 换行后由请求方式起头，跟随具体的路由，再指出函数参数数据，以及返回的数据。
 
 大致如下：
+
 ```api
 @handler FunctionName
 requestWay /route(dataname) returns(dataname)
 ```
+
 ### 生成中心网关代码
+
 运用 `goctl` 将api文档生成中心网关的代码。
 
 前文生成的api文档在修改后如下内容：
+
 ```api
 syntax = "v1"
 
 info (
-	title: "usermanager"
-	desc: "a user manager system"
-	author: "myname"
-	email: "myemail"
+ title: "usermanager"
+ desc: "a user manager system"
+ author: "myname"
+ email: "myemail"
 )
 
 type request {
-	username int64 `path:"user"`
+ username int64 `path:"user"`
 }
 
 type response {
-	ok bool `json:"ok"`
+ ok bool `json:"ok"`
 }
 
 service tmp-api {
-	@handler GetUser
-	get /users/id/:user(request) returns(response)
+ @handler GetUser
+ get /users/id/:user(request) returns(response)
 
-	@handler CreateUser
-	post /users/create(request)
+ @handler CreateUser
+ post /users/create(request)
 }
 ```
 
 随后确保在 `/api` 目录下，运行：
+
 ```bash
 goctl api go -api usermanager.api -dir .
 ```
+
 即可生成相对应的微服务中心网关代码。
+
 ## 微服务
+
 在该阶段我们需要为通过api文档建立的网络响应函数提供微服务。
+
 ### 创建 `proto` 文件
+
 返回根目录，执行下述命令。
+
 ```bash
 
 # 创建目录 `rpc` 并在该目录下创建目录 `getuser` `createuser` 两个目录。
@@ -169,27 +216,32 @@ cd getuser
 goctl rpc -o getuser.proto
 
 ```
+
 此时在 `/rpc/getuser` 目录下出现了文件 `getuser.proto`。
 
 后续该模块的代码初始化将通过该文件实现。
 
 `createuser` 目录下的对应文件使用相同的方式创建。
+
 ### 生成微服务框架
+
 将 proto 中的内容修改。
+
 ```proto
 // getuser.proto
 message Request {
-	int64 username = 1;
+ int64 username = 1;
 }
 
 message Response {
-	bool ok = 1;
+ bool ok = 1;
 }
 
 service Getuser {
   rpc GetUser(Request) returns(Response);
 }
 ```
+
 ```proto
 // createuser.proto
 message Request {
@@ -204,7 +256,9 @@ service CreateUser {
   rpc CreateUser(Request) returns (Response);
 }
 ```
+
 然后分别在目录 `/rpc/getuser` 和 `/rpc/createuser` 下运行命令：
+
 ```bash
 # /rpc/getuser
 goctl rpc protoc getuser.proto --go_out=. --go-grpc_out=. --zrpc_out=.
@@ -212,10 +266,15 @@ goctl rpc protoc getuser.proto --go_out=. --go-grpc_out=. --zrpc_out=.
 # /rpc/createuser
 goctl rpc protoc createuser.proto --go_out=. --go-grpc_out=. --zrpc_out=.
 ```
+
 完成后记得在 `rpc/getuser/etc/getuser.yaml` 中将监听端口从8080更改为8081或其他闲置端口，避免与 `createuser` 的微服务冲突。
+
 ## 中心网关对接微服务
+
 ### 网络连接
+
 我们在 `api/etc/usermanager-api.yaml` 文件中添加如下内容
+
 ```yaml
 Getuser:
   Etcd:
@@ -228,146 +287,175 @@ Createuser:
       - localhost:2379
     Key: createuser.rpc
 ```
+
 ### api 相关配置
+
 在 `api/internal/config/config.go` 中修改如下内容:
+
 ```go
 type Config struct {
-	rest.RestConf
-	GetUser    zrpc.RpcClientConf
-	CreateUser zrpc.RpcClientConf
+ rest.RestConf
+ GetUser    zrpc.RpcClientConf
+ CreateUser zrpc.RpcClientConf
 }
 ```
+
 以及在 `api/internal/svc/servicecontext.go` 中修改:
+
 ```go
 type ServiceContext struct {
-	Config     config.Config
-	GetUser    getuserclient.Getuser
-	CreateUser createuserclient.CreateUser
+ Config     config.Config
+ GetUser    getuserclient.Getuser
+ CreateUser createuserclient.CreateUser
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	return &ServiceContext{
-		Config:     c,
-		GetUser:    getuserclient.NewGetuser(zrpc.MustNewClient(c.GetUser)),
-		CreateUser: createuserclient.NewCreateUser(zrpc.MustNewClient(c.CreateUser)),
-	}
+ return &ServiceContext{
+  Config:     c,
+  GetUser:    getuserclient.NewGetuser(zrpc.MustNewClient(c.GetUser)),
+  CreateUser: createuserclient.NewCreateUser(zrpc.MustNewClient(c.CreateUser)),
+ }
 }
 ```
+
 ### 填写 api 逻辑
+
 在 `api/internal/logic/getuserlogic.go` 中修改 `GetUser` 方法：
+
 ```go
 func (l *GetUserLogic) GetUser(req *types.Request) (resp *types.Response, err error) {
-	// 手写代码
-	r, err := l.svcCtx.GetUser.GetUser(l.ctx, &getuser.Request{
-		Username: req.Username,
-	})
-	if err != nil {
-		logx.Error(err)
-		return &types.Response{
-			Ok: false,
-		}, err
-	}
-	return &types.Response{
-		Ok: r.Ok,
-	}, nil
-	//
+ // 手写代码
+ r, err := l.svcCtx.GetUser.GetUser(l.ctx, &getuser.Request{
+  Username: req.Username,
+ })
+ if err != nil {
+  logx.Error(err)
+  return &types.Response{
+   Ok: false,
+  }, err
+ }
+ return &types.Response{
+  Ok: r.Ok,
+ }, nil
+ //
 }
 ```
+
 在 `api/internal/logic/createuserlogic.go` 中修改 `CreateUser` 方法：
+
 ```go
 func (l *CreateUserLogic) CreateUser(req *types.Request) error {
 
-	_, err := l.svcCtx.CreateUser.CreateUser(l.ctx, &createuser.Request{
-		Username: req.Username,
-	})
+ _, err := l.svcCtx.CreateUser.CreateUser(l.ctx, &createuser.Request{
+  Username: req.Username,
+ })
 
-	if err != nil {
-		logx.Error(err)
-		return err
-	}
+ if err != nil {
+  logx.Error(err)
+  return err
+ }
 
-	return nil
+ return nil
 }
 ```
+
 ## 数据库
+
 接下来我们要将数据通过 `MySQL` 存储。
+
 ### 自定义表单结构
+
 创建目录 `rpc/model`。
 
 在该目录下创建 `user.sql` 并编写:
+
 ```sql
 create table `user`
 (
-	`username` int,
-	primary key(`username`)
+ `username` int,
+ primary key(`username`)
 );
 ```
+
 然后再该目录下执行语句:
+
 ```bash
 goctl model mysql ddl -c -src user.sql -dir .
 ```
+
 即可生成 curd 结构。
+
 ## 微服务中链接数据库
+
 修改 `rpc/createuser/etc/createuser.yaml` 和 `rpc/getuser/etc/getuser.yaml`：
+
 ```yaml
 DataSource: username:password@tcp(127.0.0.1:3306)/gozeroexp
 Table: user
 Cache:
   - Host: 127.0.0.1:6379
 ```
+
 `DataSource` 中的内容将 `username` 和 `password` 两个地方修改为自己数据库的用户名与密码即可。
 
 然后修改 `rpc/createuser/internal/config/config.go` 和 `rpc/getuser/internal/config/config.go` ，如下：
+
 ```go
 type Config struct {
-	zrpc.RpcServerConf
-	DataSource string
-	Cache cache.CacheConf
+ zrpc.RpcServerConf
+ DataSource string
+ Cache cache.CacheConf
 }
 ```
+
 修改 `rpc/createuser/internal/svc/servicecontext.go` 和 `rpc/getuser/internal/svc/servicecontext.go` ，如下：
+
 ```go
 type ServiceContext struct {
-	Config config.Config
-	Model model.BookModel
+ Config config.Config
+ Model model.BookModel
 }
 func NewServiceContext(c config.Config) *ServiceContext {
-	return &ServiceContext{
-		Config: c,
-		Model: model.NewBookModel(sqlx.NewMysql(c.DataSource), c.Cache),
-	}
+ return &ServiceContext{
+  Config: c,
+  Model: model.NewBookModel(sqlx.NewMysql(c.DataSource), c.Cache),
+ }
 }
 ```
+
 最后修改 `rpc/createuser/internal/logic/createuserlogic.go` 和 `rpc/getuser/internal/logic/getuserlogic.go` ，如下：
+
 ```go
 func (l *CreateUserLogic) CreateUser(in *createuser.Request) (*createuser.Response, error) {
 
-	_, err := l.svcCtx.Model.Insert(l.ctx, &model.User{
-		Username: in.Username,
-	})
+ _, err := l.svcCtx.Model.Insert(l.ctx, &model.User{
+  Username: in.Username,
+ })
 
-	if err != nil {
-		return nil, err
-	}
+ if err != nil {
+  return nil, err
+ }
 
-	return &createuser.Response{
-		Ok: true,
-	}, nil
+ return &createuser.Response{
+  Ok: true,
+ }, nil
 }
 
 func (l *GetUserLogic) GetUser(in *getuser.Request) (*getuser.Response, error) {
-	
-	resp, err := l.svcCtx.Model.FindOne(l.ctx, in.User)
-	if err != nil {
-		return nil, err
-	}
+ 
+ resp, err := l.svcCtx.Model.FindOne(l.ctx, in.User)
+ if err != nil {
+  return nil, err
+ }
 
-	return &getuser.Response{
-		Ok: true,
-	}, nil
+ return &getuser.Response{
+  Ok: true,
+ }, nil
 }
 ```
+
 ## 运行
+
 - 确保 `MySQL` `etcd` `Redis` 在后台已经运行。
 - 随后在 `api` `rpc/createuser` `rpc/getuser` 下运行 `go build` 命令获得对应的二进制文件。
 - 运行 `createuser.exe` 和 `getuser.exe`。

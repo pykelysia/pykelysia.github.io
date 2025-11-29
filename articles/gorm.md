@@ -5,11 +5,13 @@
 ## 使用
 
 下载依赖：
+
 ```sh
 go get gorm.io/gorm
 ```
 
 在文件中添加如下代码连接至数据库：
+
 ```go
 dsn := "username:password@tcp(127.0.0.1:3306)/database"
 db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -25,12 +27,12 @@ db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 // type.go
 type (
-	Product struct {
+ Product struct {
         // 定义表单主键，以及主键自增，在插入时就会自动为主键赋值
-		ID    int `grom:"primaryKey;sutoIncrement"`
-		Name  string
-		Price int
-	}
+  ID    int `grom:"primaryKey;sutoIncrement"`
+  Name  string
+  Price int
+ }
 )
 
 // main.go
@@ -70,6 +72,7 @@ fmt.Println(results)
 实际生产过程中，对数据库的操作往往不只局限于单独对一个表单的查询，往往需要多个表单，一起查找。
 
 针对此情景， `gorm` 库提供了两种高级查询的方法：
+
 - 原生 `SELECT` 和 `JOIN`
 - `gorm` 内置 `PreLoad` 和 `foreignKey`
 
@@ -111,9 +114,10 @@ fmt.Println(result)
 
 一般而言，外键的使用涉及到了数据之间的关系，主要包括；Belongs To，Has One，Has Many，Many To Many。不同的数据逻辑关系，影响到了他们使用外键的方式。
 
-**Belongs To**: 
+**Belongs To**:
 
 即“多对一”，比如多个 Product 属于一个 Company。
+
 ```go
 type (
     Product struct {
@@ -126,54 +130,57 @@ type (
 )
 ```
 
-**Has One**: 
+**Has One**:
 
 即“一对一”关系，比如一个 Company 只拥有一个 Product。（虽然这个不怎么现实）
+
 ```go
 type (
-	Product struct {
-		ID    int    `gorm:"primaryKey;autoIncrement;column:id"`
-	}
-	Company struct {
-		CompanyID   int     `gorm:"primarykey;autoIncrement;column:company_id"`
-		Product     Product `gorm:"foreignKey:ID"`
-	}
+ Product struct {
+  ID    int    `gorm:"primaryKey;autoIncrement;column:id"`
+ }
+ Company struct {
+  CompanyID   int     `gorm:"primarykey;autoIncrement;column:company_id"`
+  Product     Product `gorm:"foreignKey:ID"`
+ }
 )
 ```
 
-    从形式上来看， Belongs To 和 Has One 的形式几乎可以说是完全相同，但是仍然有一些细微的差距这一点差距可以在使用 PreLoad 函数时有所体会。
+从形式上来看， Belongs To 和 Has One 的形式几乎可以说是完全相同，但是仍然有一些细微的差距这一点差距可以在使用 PreLoad 函数时有所体会。
 
-**Has Many**: 
+**Has Many**:
 
 即“一对多”关系，比如一个 Company 有多个 Product。
+
 ```go
 type (
-	Product struct {
-		ID        int    `gorm:"primaryKey;autoIncrement;column:id"`
-		CompanyID int    `gorm:"column:company_id"`
-	}
-	Company struct {
-		CompanyID   int       `gorm:"primarykey;autoIncrement;column:company_id"`
-		Product     []Product `gorm:"foreignKey:CompanyID"`
+ Product struct {
+  ID        int    `gorm:"primaryKey;autoIncrement;column:id"`
+  CompanyID int    `gorm:"column:company_id"`
+ }
+ Company struct {
+  CompanyID   int       `gorm:"primarykey;autoIncrement;column:company_id"`
+  Product     []Product `gorm:"foreignKey:CompanyID"`
         // NOTICE: 这里的外键中所指的是 Product.CompanyID，
         //         而非 Company.CompanyID
-	}
+ }
 )
 ```
 
-**Many To Many**: 
+**Many To Many**:
 
 即“多对多”关系，比如一个 Company 可以有多个 Product，而同一个 Product 也可以属于多个 Company 共同生产。
+
 ```go
 type (
-	Product struct {
-		ID    int    `gorm:"primaryKey;autoIncrement;column:id"`
-	}
-	Company struct {
-		CompanyID   int       `gorm:"primarykey;autoIncrement;column:company_id"`
-		CompanyName string    `gorm:"column:company_name"`
-		Product     []Product `gorm:"many2many:company_product;"`
-	}
+ Product struct {
+  ID    int    `gorm:"primaryKey;autoIncrement;column:id"`
+ }
+ Company struct {
+  CompanyID   int       `gorm:"primarykey;autoIncrement;column:company_id"`
+  CompanyName string    `gorm:"column:company_name"`
+  Product     []Product `gorm:"many2many:company_product;"`
+ }
 )
 ```
 
