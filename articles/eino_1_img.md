@@ -12,16 +12,16 @@
 type Message struct {
     // ...
 
-	// if MultiContent is not empty, use this instead of Content
-	// if MultiContent is empty, use Content
-	// Deprecated: Use UserInputMultiContent for user multimodal inputs and AssistantGenMultiContent for model multimodal outputs.
-	MultiContent []ChatMessagePart `json:"multi_content,omitempty"`
+    // if MultiContent is not empty, use this instead of Content
+    // if MultiContent is empty, use Content
+    // Deprecated: Use UserInputMultiContent for user multimodal inputs and AssistantGenMultiContent for model multimodal outputs.
+    MultiContent []ChatMessagePart `json:"multi_content,omitempty"`
 
-	// UserInputMultiContent passes multimodal content provided by the user to the model.
-	UserInputMultiContent []MessageInputPart `json:"user_input_multi_content,omitempty"`
+    // UserInputMultiContent passes multimodal content provided by the user to the model.
+    UserInputMultiContent []MessageInputPart `json:"user_input_multi_content,omitempty"`
 
-	// AssistantGenMultiContent is for receiving multimodal output from the model.
-	AssistantGenMultiContent []MessageOutputPart `json:"assistant_output_multi_content,omitempty"`
+    // AssistantGenMultiContent is for receiving multimodal output from the model.
+    AssistantGenMultiContent []MessageOutputPart `json:"assistant_output_multi_content,omitempty"`
 
     // ...
 }
@@ -35,19 +35,19 @@ type Message struct {
 
 ```go
 type MessageInputPart struct {
-	Type ChatMessagePartType `json:"type"`
-	Text string `json:"text,omitempty"`Type is "image_url".
-	Image *MessageInputImage `json:"image,omitempty"`
-	Audio *MessageInputAudio `json:"audio,omitempty"`
-	Video *MessageInputVideo `json:"video,omitempty"`
-	File *MessageInputFile `json:"file,omitempty"`
+    Type ChatMessagePartType `json:"type"`
+    Text string `json:"text,omitempty"`Type is "image_url".
+    Image *MessageInputImage `json:"image,omitempty"`
+    Audio *MessageInputAudio `json:"audio,omitempty"`
+    Video *MessageInputVideo `json:"video,omitempty"`
+    File *MessageInputFile `json:"file,omitempty"`
 }
 type MessageOutputPart struct {
-	Type ChatMessagePartType `json:"type"`
-	Text string `json:"text,omitempty"`
-	Image *MessageOutputImage `json:"image,omitempty"`
-	Audio *MessageOutputAudio `json:"audio,omitempty"`
-	Video *MessageOutputVideo `json:"video,omitempty"`
+    Type ChatMessagePartType `json:"type"`
+    Text string `json:"text,omitempty"`
+    Image *MessageOutputImage `json:"image,omitempty"`
+    Audio *MessageOutputAudio `json:"audio,omitempty"`
+    Video *MessageOutputVideo `json:"video,omitempty"`
 }
 ```
 
@@ -57,16 +57,16 @@ type MessageOutputPart struct {
 
 ```go
 const (
-	// ChatMessagePartTypeText means the part is a text.
-	ChatMessagePartTypeText ChatMessagePartType = "text"
-	// ChatMessagePartTypeImageURL means the part is an image url.
-	ChatMessagePartTypeImageURL ChatMessagePartType = "image_url"
-	// ChatMessagePartTypeAudioURL means the part is an audio url.
-	ChatMessagePartTypeAudioURL ChatMessagePartType = "audio_url"
-	// ChatMessagePartTypeVideoURL means the part is a video url.
-	ChatMessagePartTypeVideoURL ChatMessagePartType = "video_url"
-	// ChatMessagePartTypeFileURL means the part is a file url.
-	ChatMessagePartTypeFileURL ChatMessagePartType = "file_url"
+    // ChatMessagePartTypeText means the part is a text.
+    ChatMessagePartTypeText ChatMessagePartType = "text"
+    // ChatMessagePartTypeImageURL means the part is an image url.
+    ChatMessagePartTypeImageURL ChatMessagePartType = "image_url"
+    // ChatMessagePartTypeAudioURL means the part is an audio url.
+    ChatMessagePartTypeAudioURL ChatMessagePartType = "audio_url"
+    // ChatMessagePartTypeVideoURL means the part is a video url.
+    ChatMessagePartTypeVideoURL ChatMessagePartType = "video_url"
+    // ChatMessagePartTypeFileURL means the part is a file url.
+    ChatMessagePartTypeFileURL ChatMessagePartType = "file_url"
 )
 ```
 
@@ -76,51 +76,45 @@ const (
 
 ```go
 type MessagePartCommon struct {
-	// URL can either be a traditional URL or a special URL conforming to RFC-2397 (https://www.rfc-editor.org/rfc/rfc2397).
-	// double check with model implementations for detailed instructions on how to use this.
-	URL *string `json:"url,omitempty"`
-	// Base64Data represents the binary data in Base64 encoded string format.
-	Base64Data *string `json:"base64data,omitempty"`
-	// MIMEType is the mime type , eg."image/png",""audio/wav" etc.
-	MIMEType string `json:"mime_type,omitempty"`
-	// Extra is used to store extra information.
-	Extra map[string]any `json:"extra,omitempty"`
+    // URL can either be a traditional URL or a special URL conforming to RFC-2397 (https://www.rfc-editor.org/rfc/rfc2397).
+    // double check with model implementations for detailed instructions on how to use this.
+    URL *string `json:"url,omitempty"`
+    // Base64Data represents the binary data in Base64 encoded string format.
+    Base64Data *string `json:"base64data,omitempty"`
+    // MIMEType is the mime type , eg."image/png",""audio/wav" etc.
+    MIMEType string `json:"mime_type,omitempty"`
+    // Extra is used to store extra information.
+    Extra map[string]any `json:"extra,omitempty"`
 }
 ```
 
 这里面的属性 `URL` 和 `Base64Data` 。 `Base64Data` 是用本地数据转码而成的，其有一个弊端就是所需的 `Token` 消耗量更多。
 
-
-
 ## 实践
-
- 
 
 最后贴出我从本地文件转为多模态信息的 `Lambda` 函数：
 
 ```go
 func newLambda(ctx context.Context, input string) (output []*schema.Message, err error) {
-	file, err := os.ReadFile(input)
-	if err != nil {
-		return
-	}
-	encodedImg := base64.StdEncoding.EncodeToString(file)
-	output = append(output, &schema.Message{
-		Role: schema.User,
-		UserInputMultiContent: []schema.MessageInputPart{
-			{
-				Type: schema.ChatMessagePartTypeImageURL,
-				Image: &schema.MessageInputImage{
-					MessagePartCommon: schema.MessagePartCommon{
-						Base64Data: &encodedImg,
-						MIMEType:   `image/jpg`,
-					},
-				},
-			},
-		},
-	})
-	return
+    file, err := os.ReadFile(input)
+    if err != nil {
+        return
+    }
+    encodedImg := base64.StdEncoding.EncodeToString(file)
+    output = append(output, &schema.Message{
+        Role: schema.User,
+        UserInputMultiContent: []schema.MessageInputPart{
+            {
+                Type: schema.ChatMessagePartTypeImageURL,
+                Image: &schema.MessageInputImage{
+                    MessagePartCommon: schema.MessagePartCommon{
+                        Base64Data: &encodedImg,
+                        MIMEType:   `image/jpg`,
+                    },
+                },
+            },
+        },
+    })
+    return
 }
 ```
-
-最后
