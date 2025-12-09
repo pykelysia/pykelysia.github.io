@@ -86,6 +86,16 @@
       "tags": [],
       "fileName": "safari.md",
       "featured": false
+    },
+    {
+      "id": "eino-multi",
+      "title": "Eino (1) _ 多模态 使用",
+      "summary": "关于 eino 框架下的多模态信息上传 model",
+      "author": "Pyke",
+      "publishDate": "2025-12-9",
+      "tags": ["eino"],
+      "fileName": "eino_1_img.md",
+      "featured": false
     }
   ]
 }
